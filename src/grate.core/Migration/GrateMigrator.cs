@@ -136,7 +136,7 @@ internal record GrateMigrator : IGrateMigrator
             // Start the transaction, if configured
             if (runInTransaction)
             {
-                scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+                scope = new TransactionScope(TransactionScopeOption.Required, TimeSpan.FromSeconds(config.CommandTimeout), TransactionScopeAsyncFlowOption.Enabled);
             }
 
             bool exceptionOccured = false;
