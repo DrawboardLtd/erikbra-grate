@@ -1,20 +1,20 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
 
 ARG os=linux-musl
 ARG arch=amd64
 ENV OS $os
 ENV ARCH $arch
 
-WORKDIR .
+WORKDIR /build
 COPY *.props ./
 COPY *.ruleset ./
 COPY src/ ./src/
-RUN dotnet publish ./src/grate/grate.csproj --os $OS --arch $ARCH -c release --self-contained -p:SelfContained=true -o ./publish/app
+RUN dotnet publish ./src/grate/grate.csproj --os $OS --arch $ARCH --framework net9.0 -c release --self-contained -p:SelfContained=true -o ./publish/app
 
 FROM alpine:3 AS base
 WORKDIR /app
 
-COPY --chmod=0755 --from=build /publish/app .
+COPY --chmod=0755 --from=build /build/publish/app .
 RUN mkdir /output
 # Add globalization support to the OS so .Net can use cultures
 RUN apk add icu-libs
